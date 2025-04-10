@@ -2,7 +2,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let cup = { x: 50, y: 150, width: 40, height: 40, vy: 0, gravity: 0.7, jumpPower: -15 };
+let cup = { x: 50, y: 150, width: 40, height: 40, vy: 0, gravity: 0.7, jumpPower: -5 };
 let obstacles = [];
 let score = 0;
 let gameOver = false;
