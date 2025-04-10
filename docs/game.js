@@ -2,7 +2,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let cup = { x: 50, y: 150, width: 40, height: 40, vy: 0, gravity: 1.5, jumpPower: -20 };
+let cup = { x: 50, y: 150, width: 40, height: 40, vy: 0, gravity: 1.2, jumpPower: -25 };
 let obstacles = [];
 let score = 0;
 let gameOver = false;
@@ -10,19 +10,24 @@ let gameOver = false;
 const cupImage = new Image();
 cupImage.src = "cup.png";
 
-cupImage.onload = () => gameLoop();
+const treeImage = new Image();
+treeImage.src = "tree.png";
 
-cupImage.onerror = () => alert("Image not found!");
+cupImage.onload = () => {
+  treeImage.onload = () => {
+    gameLoop();
+  };
+};
+
+cupImage.onerror = () => alert("cup.png not found!");
+treeImage.onerror = () => alert("tree.png not found!");
 
 function drawCup() {
   ctx.drawImage(cupImage, cup.x, cup.y, cup.width, cup.height);
 }
 
 function drawObstacle(ob) {
-  ctx.fillStyle = "#444";
-  ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
-  ctx.fillStyle = "#fff";
-  ctx.fillText(ob.text, ob.x + 5, ob.y + 25);
+  ctx.drawImage(treeImage, ob.x, ob.y - 30, ob.width, ob.height + 30);
 }
 
 function update() {
@@ -34,7 +39,7 @@ function update() {
   }
 
   for (let i = 0; i < obstacles.length; i++) {
-    obstacles[i].x -= 3;
+    obstacles[i].x -= 2;
     drawObstacle(obstacles[i]);
 
     if (
@@ -51,10 +56,8 @@ function update() {
 
   obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
 
-  if (Math.random() < 0.02) {
-    let messages = ["404", "null", "NaN", "fix later", "☕"];
-    let msg = messages[Math.floor(Math.random() * messages.length)];
-    obstacles.push({ x: canvas.width, y: 160, width: 50, height: 40, text: msg });
+  if (Math.random() < 0.01) {
+    obstacles.push({ x: canvas.width, y: 160, width: 40, height: 40 });
   }
 
   drawCup();
