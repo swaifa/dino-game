@@ -4,25 +4,28 @@ const ctx = canvas.getContext("2d");
 
 let cup = { x: 50, y: 150, width: 40, height: 40, vy: 0, gravity: 1.5, jumpPower: -20 };
 let obstacles = [];
-let gameOver = false;
 let score = 0;
+let gameOver = false;
 
-// Load coffee cup image
 const cupImage = new Image();
-cupImage.src = "assets/cup.png";
+cupImage.src = "cup.png";
+
+cupImage.onload = () => gameLoop();
+
+cupImage.onerror = () => alert("Image not found!");
 
 function drawCup() {
   ctx.drawImage(cupImage, cup.x, cup.y, cup.width, cup.height);
 }
 
 function drawObstacle(ob) {
-  ctx.fillStyle = "#404040";
+  ctx.fillStyle = "#444";
   ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
+  ctx.fillStyle = "#fff";
+  ctx.fillText(ob.text, ob.x + 5, ob.y + 25);
 }
 
 function update() {
-  if (gameOver) return;
-
   cup.vy += cup.gravity;
   cup.y += cup.vy;
   if (cup.y > 150) {
@@ -30,12 +33,10 @@ function update() {
     cup.vy = 0;
   }
 
-  // Update and draw obstacles
   for (let i = 0; i < obstacles.length; i++) {
-    obstacles[i].x -= 3; // Slowed down from 6 to 3
+    obstacles[i].x -= 3;
     drawObstacle(obstacles[i]);
 
-    // Collision
     if (
       cup.x < obstacles[i].x + obstacles[i].width &&
       cup.x + cup.width > obstacles[i].x &&
@@ -48,13 +49,11 @@ function update() {
     }
   }
 
-  // Remove off-screen obstacles
   obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
 
-  // Randomly add new obstacles
   if (Math.random() < 0.02) {
-    let commitMessages = ["fix: typo", "wip: testing", "404", "refactor"];
-    let msg = commitMessages[Math.floor(Math.random() * commitMessages.length)];
+    let messages = ["404", "null", "NaN", "fix later", "☕"];
+    let msg = messages[Math.floor(Math.random() * messages.length)];
     obstacles.push({ x: canvas.width, y: 160, width: 50, height: 40, text: msg });
   }
 
@@ -75,5 +74,3 @@ document.addEventListener("keydown", function(e) {
     cup.vy = cup.jumpPower;
   }
 });
-
-gameLoop();
