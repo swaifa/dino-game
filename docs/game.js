@@ -7,10 +7,10 @@ let cup = {
   width: 40,
   height: 40,
   vy: 0,
-  gravity: 0.8,
-  jumpPower: -1.5,     // small upward force per frame
+  gravity: 0.7,          // Gravity
+  jumpPower: -3.5,       // Each upward frame force
   isJumping: false,
-  jumpLength: 20,      // total frames to keep pushing upward
+  jumpLength: 18,        // How many frames the jump lasts
   jumpTimer: 0
 };
 
@@ -41,7 +41,6 @@ function drawObstacle(ob) {
 }
 
 function update() {
-  // Apply jump if in jump state
   if (cup.isJumping && cup.jumpTimer > 0) {
     cup.vy = cup.jumpPower;
     cup.jumpTimer--;
