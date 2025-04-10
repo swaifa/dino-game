@@ -1,8 +1,16 @@
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let cup = { x: 50, y: 150, width: 40, height: 40, vy: 0, gravity: 0.7, jumpPower: -15 };
+let cup = {
+  x: 50,
+  y: 150,
+  width: 40,
+  height: 40,
+  vy: 0,
+  gravity: 1.0,
+  jumpPower: -15
+};
+
 let obstacles = [];
 let score = 0;
 let gameOver = false;
@@ -19,8 +27,8 @@ cupImage.onload = () => {
   };
 };
 
-cupImage.onerror = () => alert("cup.png not found!");
-treeImage.onerror = () => alert("tree.png not found!");
+cupImage.onerror = () => alert("☕ cup.png not found!");
+treeImage.onerror = () => alert("🌲 tree.png not found!");
 
 function drawCup() {
   ctx.drawImage(cupImage, cup.x, cup.y, cup.width, cup.height);
@@ -33,15 +41,17 @@ function drawObstacle(ob) {
 function update() {
   cup.vy += cup.gravity;
   cup.y += cup.vy;
+
   if (cup.y > 150) {
     cup.y = 150;
     cup.vy = 0;
   }
 
   for (let i = 0; i < obstacles.length; i++) {
-    obstacles[i].x -= 2;
+    obstacles[i].x -= 2.5;
     drawObstacle(obstacles[i]);
 
+    // Collision detection
     if (
       cup.x < obstacles[i].x + obstacles[i].width &&
       cup.x + cup.width > obstacles[i].x &&
@@ -54,9 +64,11 @@ function update() {
     }
   }
 
+  // Remove off-screen obstacles
   obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
 
-  if (Math.random() < 0.01) {
+  // Add new obstacles occasionally
+  if (Math.random() < 0.012) {
     obstacles.push({ x: canvas.width, y: 160, width: 40, height: 40 });
   }
 
