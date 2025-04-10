@@ -7,13 +7,15 @@ let cup = {
   width: 40,
   height: 40,
   vy: 0,
-  gravity: 1.0,
-  jumpPower: -15
+  gravity: 1.2,
+  jumpPower: -20
 };
 
 let obstacles = [];
 let score = 0;
 let gameOver = false;
+let obstacleTimer = 0;
+const obstacleCooldown = 100; // frames between spawns
 
 const cupImage = new Image();
 cupImage.src = "cup.png";
@@ -26,9 +28,6 @@ cupImage.onload = () => {
     gameLoop();
   };
 };
-
-cupImage.onerror = () => alert("☕ cup.png not found!");
-treeImage.onerror = () => alert("🌲 tree.png not found!");
 
 function drawCup() {
   ctx.drawImage(cupImage, cup.x, cup.y, cup.width, cup.height);
@@ -48,10 +47,10 @@ function update() {
   }
 
   for (let i = 0; i < obstacles.length; i++) {
-    obstacles[i].x -= 2.5;
+    obstacles[i].x -= 3; // slightly faster
     drawObstacle(obstacles[i]);
 
-    // Collision detection
+    // Collision
     if (
       cup.x < obstacles[i].x + obstacles[i].width &&
       cup.x + cup.width > obstacles[i].x &&
@@ -64,12 +63,13 @@ function update() {
     }
   }
 
-  // Remove off-screen obstacles
   obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
 
-  // Add new obstacles occasionally
-  if (Math.random() < 0.012) {
+  // Obstacle spawn timer
+  obstacleTimer++;
+  if (obstacleTimer >= obstacleCooldown) {
     obstacles.push({ x: canvas.width, y: 160, width: 40, height: 40 });
+    obstacleTimer = 0;
   }
 
   drawCup();
@@ -84,7 +84,7 @@ function gameLoop() {
   if (!gameOver) requestAnimationFrame(gameLoop);
 }
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener("keydown", function (e) {
   if (e.code === "Space" && cup.y >= 150) {
     cup.vy = cup.jumpPower;
   }
