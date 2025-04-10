@@ -7,15 +7,18 @@ let cup = {
   width: 40,
   height: 40,
   vy: 0,
-  gravity: 1.2,
-  jumpPower: -20
+  gravity: 0.8,
+  jumpPower: -1.5,     // small upward force per frame
+  isJumping: false,
+  jumpLength: 20,      // total frames to keep pushing upward
+  jumpTimer: 0
 };
 
 let obstacles = [];
 let score = 0;
 let gameOver = false;
 let obstacleTimer = 0;
-const obstacleCooldown = 100; // frames between spawns
+const obstacleCooldown = 120;
 
 const cupImage = new Image();
 cupImage.src = "cup.png";
@@ -38,19 +41,25 @@ function drawObstacle(ob) {
 }
 
 function update() {
+  // Apply jump if in jump state
+  if (cup.isJumping && cup.jumpTimer > 0) {
+    cup.vy = cup.jumpPower;
+    cup.jumpTimer--;
+  }
+
   cup.vy += cup.gravity;
   cup.y += cup.vy;
 
   if (cup.y > 150) {
     cup.y = 150;
     cup.vy = 0;
+    cup.isJumping = false;
   }
 
   for (let i = 0; i < obstacles.length; i++) {
-    obstacles[i].x -= 3; // slightly faster
+    obstacles[i].x -= 2.5;
     drawObstacle(obstacles[i]);
 
-    // Collision
     if (
       cup.x < obstacles[i].x + obstacles[i].width &&
       cup.x + cup.width > obstacles[i].x &&
@@ -65,7 +74,6 @@ function update() {
 
   obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
 
-  // Obstacle spawn timer
   obstacleTimer++;
   if (obstacleTimer >= obstacleCooldown) {
     obstacles.push({ x: canvas.width, y: 160, width: 40, height: 40 });
@@ -86,6 +94,7 @@ function gameLoop() {
 
 document.addEventListener("keydown", function (e) {
   if (e.code === "Space" && cup.y >= 150) {
-    cup.vy = cup.jumpPower;
+    cup.isJumping = true;
+    cup.jumpTimer = cup.jumpLength;
   }
 });
