@@ -7,11 +7,11 @@ let cup = {
   width: 40,
   height: 40,
   vy: 0,
-  gravity: 0.5,
+  gravity: 0.7,
   isJumping: false,
   jumpTimer: 0,
-  jumpLength: 25,     // How long the jump lasts
-  jumpHeight: 5.5     // How high the jump goes
+  jumpLength: 25,     // airtime (frames)
+  jumpHeight: 5.5     // upward force per frame
 };
 
 let obstacles = [];
@@ -19,6 +19,9 @@ let score = 0;
 let gameOver = false;
 let obstacleTimer = 0;
 const obstacleCooldown = 120;
+
+let lastTime = 0; // Store the last timestamp
+const maxFPS = 60; // Maximum 60 FPS
 
 const cupImage = new Image();
 cupImage.src = "cup.png";
@@ -28,7 +31,7 @@ treeImage.src = "tree.png";
 
 cupImage.onload = () => {
   treeImage.onload = () => {
-    gameLoop();
+    gameLoop(0); // Start the game loop
   };
 };
 
@@ -41,7 +44,7 @@ function drawObstacle(ob) {
 }
 
 function update() {
-  // Apply jump logic
+  // Apply jump if in jump state
   if (cup.isJumping && cup.jumpTimer > 0) {
     cup.vy = -cup.jumpHeight;
     cup.jumpTimer--;
@@ -67,10 +70,8 @@ function update() {
       cup.y + cup.height > obstacles[i].y
     ) {
       gameOver = true;
-      setTimeout(() => {
-        alert("☕ You spilled the coffee!\nTry again before the code review starts...");
-        document.location.reload();
-      }, 100);
+      alert("☕ You spilled the coffee!\nTry again before the code review starts...");
+      document.location.reload();
     }
   }
 
@@ -89,7 +90,11 @@ function update() {
   score++;
 }
 
-function gameLoop() {
+function gameLoop(timestamp) {
+  // Limit the frame rate to maxFPS (60 frames per second)
+  if (timestamp - lastTime < 1000 / maxFPS) return;
+  lastTime = timestamp;
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   update();
   if (!gameOver) requestAnimationFrame(gameLoop);
