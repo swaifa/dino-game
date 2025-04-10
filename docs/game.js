@@ -7,11 +7,11 @@ let cup = {
   width: 40,
   height: 40,
   vy: 0,
-  gravity: 0.7,          // Gravity
-  jumpPower: -3.5,       // Each upward frame force
+  gravity: 0.5,
   isJumping: false,
-  jumpLength: 18,        // How many frames the jump lasts
-  jumpTimer: 0
+  jumpTimer: 0,
+  jumpLength: 25,     // How long the jump lasts
+  jumpHeight: 5.5     // How high the jump goes
 };
 
 let obstacles = [];
@@ -41,8 +41,9 @@ function drawObstacle(ob) {
 }
 
 function update() {
+  // Apply jump logic
   if (cup.isJumping && cup.jumpTimer > 0) {
-    cup.vy = cup.jumpPower;
+    cup.vy = -cup.jumpHeight;
     cup.jumpTimer--;
   }
 
@@ -66,8 +67,10 @@ function update() {
       cup.y + cup.height > obstacles[i].y
     ) {
       gameOver = true;
-      alert("☕ You spilled the coffee!\nTry again before the code review starts...");
-      document.location.reload();
+      setTimeout(() => {
+        alert("☕ You spilled the coffee!\nTry again before the code review starts...");
+        document.location.reload();
+      }, 100);
     }
   }
 
@@ -81,6 +84,7 @@ function update() {
 
   drawCup();
   ctx.fillStyle = "#000";
+  ctx.font = "14px monospace";
   ctx.fillText("Score: " + score, 10, 20);
   score++;
 }
